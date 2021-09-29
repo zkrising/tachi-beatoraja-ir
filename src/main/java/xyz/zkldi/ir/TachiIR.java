@@ -356,7 +356,9 @@ public class TachiIR implements IRConnection {
 	}
 	public String getCourseURL(IRCourseData course) { return null; }
 	public String getPlayerURL(IRPlayerData irpd) {
-		// @todo Implement getPlayerUrl
-		return null;
+		// @warn It's not possible for us to infer what context of
+		// playtype this user was referred from. This will have
+		// to do.
+		return BASE_URL + "/users/" + irpd.username + "/games/bms";
 	}
 }
