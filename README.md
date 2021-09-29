@@ -24,3 +24,9 @@ As such, this binary **WILL CLOSE THE GAME** if it detects it is running in norm
 ## Acknowledgements
 
 The baseline for this implementation was provided by [Seraphin-](https://github.com/Seraphin-).
+
+## Contribution
+
+I do not like writing Java. Any contributions to this repository are massively appreciated, as it reduces the amount of time I have to spend writing Java.
+
+Despite this being a separate language, you should still read the [Tachi Contribution Guide](https://tachi.readthedocs.io/en/latest/codebase/contributing/).
