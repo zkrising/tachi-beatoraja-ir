@@ -20,3 +20,7 @@ As such, this binary **WILL CLOSE THE GAME** if it detects it is running in norm
 - Copy the relevant build of `beatoraja.jar` into `external/beatoraja.jar`.
 - Set the TCHIR_HOME, TCHIR_NAME and TCHR_BASE_URL environment variables to what they need to be.
 - Use `mvn compile assembly:single`. This will compile it into a single transferable `.jar` file. 
+
+## Acknowledgements
+
+The baseline for this implementation was provided by [Seraphin-](https://github.com/Seraphin-).
