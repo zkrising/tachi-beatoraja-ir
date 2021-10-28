@@ -1,2 +1,6 @@
 /target
 /external/beatoraja.jar
+
+*.settings
+.classpath
+.project
