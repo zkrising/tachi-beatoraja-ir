@@ -9,7 +9,7 @@
   <version>2.0.0</version>
 
   <name>Tachi IR</name>
-  <url>http://zkldi.xyz</url>
+  <url>https://github.com/TNG-dev</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
