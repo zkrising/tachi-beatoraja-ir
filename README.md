@@ -7,8 +7,7 @@ Check the sidebar. When a new version of this is created, `.jar` files will be c
 
 ## Setup
 
-You should create a beatoraja API key using <TODO>.
-You should put your beatoraja API key into the password field. The username field is ignored, but you can fill it anyway.
+Follow the instructions on [Bokutachi](https://bokutachi.xyz/dashboard/imports/beatoraja-ir).
 
 ## Troubleshooting
 
