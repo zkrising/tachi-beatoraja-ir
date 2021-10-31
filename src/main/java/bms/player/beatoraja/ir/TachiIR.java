@@ -1,33 +1,19 @@
 package bms.player.beatoraja.ir;
 
-import java.util.Map;
-
-import javax.imageio.spi.ImageReaderSpi;
-
-import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import bms.player.beatoraja.MainController;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
-import bms.player.beatoraja.PlayerInformation;
-import bms.player.beatoraja.TableData;
-import bms.player.beatoraja.CourseData;
-import bms.player.beatoraja.song.SongInformation;
-import bms.player.beatoraja.song.SongData;
-import bms.player.beatoraja.play.JudgeProperty;
-import bms.player.beatoraja.ir.*;
+import bms.player.beatoraja.MainController;
 import bms.player.beatoraja.ScoreData;
-import bms.player.beatoraja.MainController;
-
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.MediaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectWriter;
 
 // thank you to Seraphin- for this code.
 // I have modified it for my own ends, but the same base is here.
