@@ -45,18 +45,26 @@ public class TachiIR implements IRConnection {
 	class ResponseCreator<T> {
 		public IRResponse<T> create(final boolean success, final String msg, final T data) {
 			return new IRResponse<T>() {
-				public boolean isSucceeded() { return success; }
-				public String getMessage() { return msg; }
-				public T getData() { return data; }
+				public boolean isSucceeded() {
+					return success;
+				}
+
+				public String getMessage() {
+					return msg;
+				}
+
+				public T getData() {
+					return data;
+				}
 			};
 		}
 	}
-	
+
 	class TachiResponse {
 		boolean success;
 		String description;
 		JsonNode body;
-		
+
 		TachiResponse(JsonNode actualObj) {
 			success = actualObj.get("success").asBoolean();
 			description = actualObj.get("description").asText();
@@ -70,13 +78,9 @@ public class TachiIR implements IRConnection {
 	TachiResponse GETRequest(String url) throws Exception {
 		OkHttpClient client = new OkHttpClient();
 
-		Request request = new Request.Builder()
-			.url(BASE_URL + url)
-			.header("User-Agent", "OKHTTP")
-			.header("X-TachiIR-Version", VERSION)
-			.addHeader("Authorization", "Bearer " + apiToken)
-			.addHeader("Accept", "application/json")
-			.build();
+		Request request = new Request.Builder().url(BASE_URL + url).header("User-Agent", "OKHTTP")
+				.header("X-TachiIR-Version", VERSION).addHeader("Authorization", "Bearer " + apiToken)
+				.addHeader("Accept", "application/json").build();
 
 		try (Response response = client.newCall(request).execute()) {
 			ObjectMapper mapper = new ObjectMapper();
@@ -87,22 +91,17 @@ public class TachiIR implements IRConnection {
 	}
 
 	/**
-	 * Makes a POST request to BASE_URL + url. Sends the 2nd argument
-	 * as the request body.
+	 * Makes a POST request to BASE_URL + url. Sends the 2nd argument as the request
+	 * body.
 	 */
 	TachiResponse POSTRequest(String url, String JSON) throws Exception {
 		OkHttpClient client = new OkHttpClient();
 		// charset=utf-8 is redundant, but is here just incase.
 		RequestBody body = RequestBody.create(MediaType.get("application/json; charset=utf-8"), JSON);
 
-		Request request = new Request.Builder()
-			.url(BASE_URL + url)
-			.header("User-Agent", "OKHTTP")
-			.header("X-TachiIR-Version", VERSION)
-			.addHeader("Accept", "application/json")
-			.addHeader("Authorization", "Bearer " + apiToken)
-			.post(body)
-			.build();
+		Request request = new Request.Builder().url(BASE_URL + url).header("User-Agent", "OKHTTP")
+				.header("X-TachiIR-Version", VERSION).addHeader("Accept", "application/json")
+				.addHeader("Authorization", "Bearer " + apiToken).post(body).build();
 
 		try (Response response = client.newCall(request).execute()) {
 			ObjectMapper mapper = new ObjectMapper();
@@ -127,27 +126,30 @@ public class TachiIR implements IRConnection {
 	}
 
 	/**
-	 * Since we extend/implement a class with the IR, we're not allowed
-	 * to use the "throws exception" function signature modifier.
+	 * Since we extend/implement a class with the IR, we're not allowed to use the
+	 * "throws exception" function signature modifier.
 	 * 
-	 * This is the only way to throw errors, and is generally a horrific idea.
-	 * Ah well.
+	 * This is the only way to throw errors, and is generally a horrific idea. Ah
+	 * well.
 	 */
 	private void panic() {
-		throw new RuntimeException("This build of TachiIR is critically broken. Report this, or check the logs above to see if it was your fault.");
+		throw new RuntimeException(
+				"This build of TachiIR is critically broken. Report this, or check the logs above to see if it was your fault.");
 	}
+
 	private void panic(String message) {
 		throw new RuntimeException(message);
 	}
 
-	public IRResponse<IRPlayerData> register(String id, String pass, String name) { return null; }
+	public IRResponse<IRPlayerData> register(String id, String pass, String name) {
+		return null;
+	}
 
 	/**
-	 * Basically does nothing. Performs some init and status checks for the
-	 * IR.
+	 * Basically does nothing. Performs some init and status checks for the IR.
 	 * 
-	 * Authentication is already handled with API keys, and users are
-	 * expected to place their relevant API key inside `password`.
+	 * Authentication is already handled with API keys, and users are expected to
+	 * place their relevant API key inside `password`.
 	 */
 	public IRResponse<IRPlayerData> login(String id, String pass) {
 		if (BASE_URL == "") {
@@ -162,13 +164,14 @@ public class TachiIR implements IRConnection {
 
 		ResponseCreator<IRPlayerData> rc = new ResponseCreator<IRPlayerData>();
 
-		// We grab the apiToken from the users password. Their username doesn't actually matter.
+		// We grab the apiToken from the users password. Their username doesn't actually
+		// matter.
 		// This is for separation of authentication concerns.
 		apiToken = pass;
 
 		try {
 			TachiResponse resp = GETRequest("/api/v1/status");
-	
+
 			if (resp.success) {
 				log("Connected to " + BASE_URL + ".");
 
@@ -176,20 +179,17 @@ public class TachiIR implements IRConnection {
 
 				if (userResp.success) {
 					log("Authenticated as " + userResp.body.get("username").asText() + ".");
-				}
-				else {
+				} else {
 					log("Failed to find out who you are. That's not good!");
 					_throw();
 				}
-			}
-			else {
+			} else {
 				log("An error has occured in logging in. Please check your details.");
 				_throw();
 			}
-	
+
 			return rc.create(resp.success, resp.description, null);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			System.out.println(e.toString());
 			return rc.create(false, "Internal Exception", null);
 		}
@@ -210,8 +210,8 @@ public class TachiIR implements IRConnection {
 	/**
 	 * Submits a score to the IR. This POSTs data out to submit-score.
 	 * 
-	 * @warn This basically just serialises IRScoreData. If a beatoraja
-	 * update causes this to collapse in on itself, that sucks.
+	 * @warn This basically just serialises IRScoreData. If a beatoraja update
+	 *       causes this to collapse in on itself, that sucks.
 	 */
 	public IRResponse<Object> sendPlayData(IRChartData model, IRScoreData score) {
 		ResponseCreator<Object> rc = new ResponseCreator<Object>();
@@ -221,12 +221,11 @@ public class TachiIR implements IRConnection {
 		try {
 			ObjectWriter ow = new ObjectMapper().writer();
 			String json = ow.writeValueAsString(playData);
-	
+
 			TachiResponse resp = POSTRequest("/ir/beatoraja/submit-score", json);
 
 			return rc.create(resp.success, resp.description, null);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			System.out.println(e.toString());
 			return rc.create(false, "Internal Exception", null);
 		}
@@ -235,6 +234,7 @@ public class TachiIR implements IRConnection {
 	class CourseData {
 		public IRCourseData course;
 		public IRScoreData score;
+
 		CourseData(IRCourseData crs, IRScoreData scr) {
 			score = scr;
 			course = crs;
@@ -252,12 +252,11 @@ public class TachiIR implements IRConnection {
 		try {
 			ObjectWriter ow = new ObjectMapper().writer();
 			String json = ow.writeValueAsString(courseData);
-	
+
 			TachiResponse resp = POSTRequest("/ir/beatoraja/submit-course", json);
-	
+
 			return rc.create(resp.success, resp.description, null);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			System.out.println(e.toString());
 			return rc.create(false, "Internal Exception", null);
 		}
@@ -266,10 +265,10 @@ public class TachiIR implements IRConnection {
 	/**
 	 * Retrieves other scores on this chart.
 	 * 
-	 * @warn Beatoraja MANDATES that every single record on this chart
-	 * is returned. If Tachi ever blows up to LR2IR scale, this function
-	 * will obliterate both the IR and itself, and aggressive caching
-	 * will have to be invoked. This is a future problem, though.
+	 * @warn Beatoraja MANDATES that every single record on this chart is returned.
+	 *       If Tachi ever blows up to LR2IR scale, this function will obliterate
+	 *       both the IR and itself, and aggressive caching will have to be invoked.
+	 *       This is a future problem, though.
 	 */
 	public IRResponse<IRScoreData[]> getPlayData(IRPlayerData irpd, IRChartData model) {
 		ResponseCreator<IRScoreData[]> rc = new ResponseCreator<IRScoreData[]>();
@@ -321,11 +320,10 @@ public class TachiIR implements IRConnection {
 			IRScoreData[] irScoreArr = irScoreDatum.toArray(new IRScoreData[0]);
 
 			// Beatoraja expects these to be sorted.
-			Arrays.sort(irScoreArr, (a,b) -> b.getExscore() - a.getExscore());
+			Arrays.sort(irScoreArr, (a, b) -> b.getExscore() - a.getExscore());
 
 			return rc.create(resp.success, resp.description, irScoreArr);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			log("An error has occured while fetching scores for " + model.title + " (" + model.sha256 + ")");
 			e.printStackTrace(System.out);
 			return rc.create(false, "Internal Exception", null);
@@ -354,11 +352,15 @@ public class TachiIR implements IRConnection {
 		// @todo Implement getSongUrl
 		return null;
 	}
-	public String getCourseURL(IRCourseData course) { return null; }
+
+	public String getCourseURL(IRCourseData course) {
+		return null;
+	}
+
 	public String getPlayerURL(IRPlayerData irpd) {
 		// @warn It's not possible for us to infer what context of
 		// playtype this user was referred from. This will have
 		// to do.
-		return BASE_URL + "/users/" + irpd.username + "/games/bms";
+		return BASE_URL + "/users/" + irpd.name + "/games/bms";
 	}
 }
