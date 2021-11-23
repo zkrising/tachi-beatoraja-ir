@@ -19,12 +19,17 @@ import okhttp3.Response;
 // I have modified it for my own ends, but the same base is here.
 
 public class TachiIR implements IRConnection {
-	public static final String NAME = System.getenv("TCHIR_NAME");
-	public static final String HOME = System.getenv("TCHIR_HOME");
-	public static final String VERSION = "2.0.0";
-	public static final String BEATORAJA_CLIENT_VERSION = MainController.getVersion();
+	// Do NOT move these variables.
+	// I mean this literally. Do not move them, do not touch them for any reason.
+	// It is part of the worlds worst templating system that I hacked
+	// together in sed in like 5 minutes.
+	// Go ahead. Look into the nice alternatives, I dare you.
+	public static final String NAME = "${tachi.name}";
+	public static final String HOME = "${tachi.home}";
+	public static final String VERSION = "${tachi.version}";
+	private static final String BASE_URL = "${tachi.baseUrl}";
 
-	private static final String BASE_URL = System.getenv("TCHIR_BASE_URL");
+	public static final String BEATORAJA_CLIENT_VERSION = MainController.getVersion();
 
 	private String apiToken = "";
 
@@ -69,6 +74,12 @@ public class TachiIR implements IRConnection {
 				.addHeader("Accept", "application/json").build();
 
 		try (Response response = client.newCall(request).execute()) {
+			int code = response.code();
+
+			if (code != 200) {
+				log("Received " + code + " from " + url + ".");
+			}
+
 			ObjectMapper mapper = new ObjectMapper();
 			JsonNode actualObj = mapper.readTree(response.body().string());
 
@@ -90,6 +101,12 @@ public class TachiIR implements IRConnection {
 				.addHeader("Authorization", "Bearer " + apiToken).post(body).build();
 
 		try (Response response = client.newCall(request).execute()) {
+			int code = response.code();
+
+			if (code != 200) {
+				log("Received " + code + " from " + url + ".");
+			}
+
 			ObjectMapper mapper = new ObjectMapper();
 			JsonNode actualObj = mapper.readTree(response.body().string());
 
@@ -143,9 +160,9 @@ public class TachiIR implements IRConnection {
 			panic();
 		}
 
-		if (!BEATORAJA_CLIENT_VERSION.startsWith("lr2oraja")) {
-			log("Invalid client. " + NAME + " IR only supports lr2oraja.");
-			panic("Invalid client. " + NAME + " IR only supports lr2oraja.");
+		if (!BEATORAJA_CLIENT_VERSION.toLowerCase().startsWith("lr2oraja")) {
+			log("Invalid client. " + NAME + " IR only supports lr2oraja. Received " + BEATORAJA_CLIENT_VERSION);
+			panic("Invalid client. " + NAME + " IR only supports lr2oraja. Received " + BEATORAJA_CLIENT_VERSION);
 		}
 
 		ResponseCreator<IRPlayerData> rc = new ResponseCreator<IRPlayerData>();
@@ -156,7 +173,7 @@ public class TachiIR implements IRConnection {
 		apiToken = pass;
 
 		try {
-			TachiResponse resp = GETRequest("/api/v1/status");
+			TachiResponse resp = GETRequest("/api/v1/status?echo=lr2oraja-ir");
 
 			if (resp.success) {
 				log("Connected to " + BASE_URL + ".");
