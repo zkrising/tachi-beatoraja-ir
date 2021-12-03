@@ -277,7 +277,7 @@ public class TachiIR implements IRConnection {
 		ResponseCreator<IRScoreData[]> rc = new ResponseCreator<IRScoreData[]>();
 
 		try {
-			TachiResponse resp = GETRequest("/ir/beatoraja/chart/" + model.sha256 + "/scores");
+			TachiResponse resp = GETRequest("/ir/beatoraja/charts/" + model.sha256 + "/scores");
 
 			if (!resp.success) {
 				return rc.create(false, "No chart data.", null);
