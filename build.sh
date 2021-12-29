@@ -1,5 +1,7 @@
-#! /bin/bash
+#!/bin/bash
 set -e -o pipefail
+
+TCHIR_VERSION="v2.0.2"
 
 # Compile time variables in java are near impossible
 # And i cannot stand dependency injection.
