@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e -o pipefail
 
+# Make sure you update the pom.xml, too!
 TCHIR_VERSION="v2.0.2"
 
 # Compile time variables in java are near impossible
