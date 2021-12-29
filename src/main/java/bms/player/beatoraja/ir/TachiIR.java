@@ -187,7 +187,7 @@ public class TachiIR implements IRConnection {
 					_throw();
 				}
 			} else {
-				log("An error has occured in logging in. Please check your details.");
+				log("An error has occured in logging in. Please make sure that you are putting an API Key in your password field, and not your site login password.");
 				_throw();
 			}
 
