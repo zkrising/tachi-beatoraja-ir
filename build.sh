@@ -1,6 +1,12 @@
 #!/bin/bash
 set -e -o pipefail
 
+if [ -z "$TCHIR_NAME" ] || [ -z "$TCHIR_HOME" ] || [ -z "$TCHIR_VERSION" ] || [ -z "$TCHIR_BASE_URL" ]; then
+	echo "You're calling build.sh without any of the required environment variables."
+	echo "Did you mean to run bokutachi.sh or bokutachi-staging.sh? (You did)"
+	exit 1;
+fi
+
 # Make sure you update the pom.xml, too!
 TCHIR_VERSION="v2.0.2"
 
