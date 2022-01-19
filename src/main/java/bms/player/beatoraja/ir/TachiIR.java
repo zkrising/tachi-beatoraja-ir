@@ -3,8 +3,6 @@ package bms.player.beatoraja.ir;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import javax.swing.JOptionPane;
-
 import com.badlogic.gdx.graphics.Color;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,7 +11,6 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import bms.player.beatoraja.MainController;
 import bms.player.beatoraja.MessageRenderer;
 import bms.player.beatoraja.ScoreData;
-import bms.player.beatoraja.MessageRenderer.Message;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -43,7 +40,7 @@ public class TachiIR implements IRConnection {
 
 	public static final String BEATORAJA_CLIENT_VERSION = MainController.getVersion();
 
-	private static final MessageRenderer msgRenderer = new MessageRenderer();
+	private MessageRenderer msgRenderer;
 
 	private String apiToken = "";
 
@@ -174,10 +171,6 @@ public class TachiIR implements IRConnection {
 				"This build of TachiIR is critically broken. Report this, or check the logs above to see if it was your fault.");
 	}
 
-	private void panic(String message) {
-		throw new RuntimeException(message);
-	}
-
 	public IRResponse<IRPlayerData> register(String id, String pass, String name) {
 		return null;
 	}
@@ -189,6 +182,8 @@ public class TachiIR implements IRConnection {
 	 * place their relevant API key inside `password`.
 	 */
 	public IRResponse<IRPlayerData> login(String id, String pass) {
+		this.msgRenderer = new MessageRenderer();
+
 		if (BASE_URL == "") {
 			log("No BASE_URL. This build of TachiIR is likely to be broken. Report this.", Importance.ERROR);
 			panic();
