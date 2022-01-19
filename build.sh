@@ -1,7 +1,8 @@
 #!/bin/bash
 set -e -o pipefail
 
-echo "$TCHIR_NAME $TCHIR_HOME $TCHIR_VERSION $TCHIR_BASE_URL"
+# Make sure you update the pom.xml, too!
+TCHIR_VERSION="v2.1.0-dev"
 
 if [ -z "$TCHIR_NAME" ] || [ -z "$TCHIR_HOME" ] || [ -z "$TCHIR_VERSION" ] || [ -z "$TCHIR_BASE_URL" ]; then
 	echo "You're calling build.sh without any of the required environment variables."
@@ -9,8 +10,7 @@ if [ -z "$TCHIR_NAME" ] || [ -z "$TCHIR_HOME" ] || [ -z "$TCHIR_VERSION" ] || [ 
 	exit 1;
 fi
 
-# Make sure you update the pom.xml, too!
-TCHIR_VERSION="v2.0.2"
+echo "BUILDING: $TCHIR_NAME $TCHIR_HOME $TCHIR_VERSION $TCHIR_BASE_URL"
 
 # Compile time variables in java are near impossible
 # And i cannot stand dependency injection.
