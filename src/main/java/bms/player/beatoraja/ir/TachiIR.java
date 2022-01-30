@@ -3,7 +3,6 @@ package bms.player.beatoraja.ir;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import com.badlogic.gdx.graphics.Color;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -39,8 +38,6 @@ public class TachiIR implements IRConnection {
 	private static final String BASE_URL = "${tachi.baseUrl}";
 
 	public static final String BEATORAJA_CLIENT_VERSION = MainController.getVersion();
-
-	private MessageRenderer msgRenderer;
 
 	private String apiToken = "";
 
@@ -134,22 +131,25 @@ public class TachiIR implements IRConnection {
 		String msg = "[" + NAME + " IR] (" + VERSION + ") " + message;
 		System.out.println(msg);
 
-		// if worse than debug
-		if (imp.compareTo(Importance.DEBUG) > 0) {
-			Color colour;
+		// COMMENTED OUT: This does not work -- it's impossible to obtain a reference to
+		// the in game
+		// message renderer.
+		// // if worse than debug
+		// if (imp.compareTo(Importance.DEBUG) > 0) {
+		// Color colour;
 
-			if (imp == Importance.ERROR) {
-				colour = Color.RED;
-			} else if (imp == Importance.WARNING) {
-				colour = Color.GOLD;
-			} else if (imp == Importance.DEBUG) {
-				colour = Color.BLUE;
-			} else {
-				colour = Color.GRAY;
-			}
+		// if (imp == Importance.ERROR) {
+		// colour = Color.RED;
+		// } else if (imp == Importance.WARNING) {
+		// colour = Color.GOLD;
+		// } else if (imp == Importance.DEBUG) {
+		// colour = Color.BLUE;
+		// } else {
+		// colour = Color.GRAY;
+		// }
 
-			msgRenderer.addMessage(msg, colour, 0);
-		}
+		// msgRenderer.addMessage(msg, colour, 0);
+		// }
 	}
 
 	/**
@@ -182,8 +182,6 @@ public class TachiIR implements IRConnection {
 	 * place their relevant API key inside `password`.
 	 */
 	public IRResponse<IRPlayerData> login(String id, String pass) {
-		this.msgRenderer = new MessageRenderer();
-
 		if (BASE_URL == "") {
 			log("No BASE_URL. This build of TachiIR is likely to be broken. Report this.", Importance.ERROR);
 			panic();

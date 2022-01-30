@@ -35,3 +35,5 @@ sed -i "s|public static final String VERSION =.*;|public static final String VER
 sed -i "s|private static final String BASE_URL =.*;|private static final String BASE_URL = \"\${tachi.baseUrl}\";|" "$JAVA_LOC"
 
 # Optional 4th step: cry
+
+echo "FINISHED BUILDING: $TCHIR_NAME $TCHIR_HOME $TCHIR_VERSION $TCHIR_BASE_URL"
