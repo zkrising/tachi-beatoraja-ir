@@ -9,11 +9,6 @@ Check the sidebar. When a new version of this is created, `.jar` files will be c
 
 Follow the instructions on [Bokutachi](https://bokutachi.xyz/dashboard/imports/beatoraja-ir).
 
-## Troubleshooting
-
-Tachi only explicitly supports `lr2oraja`, since LR2 is the standard for what players play on.
-As such, this binary **WILL CLOSE THE GAME** if it detects it is running in normal beatoraja.
-
 ## Compiling
 
 - Copy the relevant build of `beatoraja.jar` into `external/beatoraja.jar`.
