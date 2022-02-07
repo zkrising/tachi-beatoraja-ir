@@ -1,6 +1,5 @@
 package bms.player.beatoraja.ir;
 
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -11,7 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 import bms.player.beatoraja.MainController;
-import bms.player.beatoraja.MessageRenderer;
 import bms.player.beatoraja.ScoreData;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -35,10 +33,10 @@ public class TachiIR implements IRConnection {
 	// It is part of the worlds worst templating system that I hacked
 	// together in sed in like 5 minutes.
 	// Go ahead. Look into the nice alternatives, I dare you.
-	public static final String NAME = "${tachi.name}";
-	public static final String HOME = "${tachi.home}";
-	public static final String VERSION = "${tachi.version}";
-	private static final String BASE_URL = "${tachi.baseUrl}";
+	public static final String NAME = "Bokutachi Staging IR";
+	public static final String HOME = "https://staging.bokutachi.xyz";
+	public static final String VERSION = "v2.1.0-dev";
+	private static final String BASE_URL = "https://staging.bokutachi.xyz";
 
 	public static final String BEATORAJA_CLIENT_VERSION = MainController.getVersion();
 
