@@ -194,7 +194,7 @@ public class TachiIR implements IRConnection {
 		String fixInfo = isWindows ? "You can skip this warning by adding 'set SHUT_UP_TACHI=yes' to your .bat file."
 				: "You can skip this warning by adding 'export SHUT_UP_TACHI=yes' to your .command file.";
 
-		if (System.getenv("SHUT_UP_TACHI") != null) {
+		if (System.getenv("SHUT_UP_TACHI") == null) {
 			if (BEATORAJA_CLIENT_VERSION.toLowerCase().startsWith("beatoraja")) {
 				String msg = "You are playing on beatoraja.\n"
 						+ "PMS (9KEY) scores will submit to the " + NAME + ".\n"
