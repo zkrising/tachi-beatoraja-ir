@@ -1,7 +1,10 @@
 package bms.player.beatoraja.ir;
 
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import javax.swing.JOptionPane;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -128,7 +131,7 @@ public class TachiIR implements IRConnection {
 	 * Utility wrapper for logging to stdout.
 	 */
 	private void log(String message, Importance imp) {
-		String msg = "[" + NAME + " IR] (" + VERSION + ") " + message;
+		String msg = "[" + NAME + "] (" + VERSION + ") " + message;
 		System.out.println(msg);
 
 		// COMMENTED OUT: This does not work -- it's impossible to obtain a reference to
@@ -182,19 +185,35 @@ public class TachiIR implements IRConnection {
 	 * place their relevant API key inside `password`.
 	 */
 	public IRResponse<IRPlayerData> login(String id, String pass) {
-		if (BASE_URL == "") {
+		if (BASE_URL.equals("")) {
 			log("No BASE_URL. This build of TachiIR is likely to be broken. Report this.", Importance.ERROR);
 			panic();
 		}
 
-		if (BEATORAJA_CLIENT_VERSION.toLowerCase().startsWith("beatoraja")) {
-			log("You are playing on beatoraja. BMS (7KEY and 14KEY) scores WILL NOT SUBMIT to " + NAME
-					+ ", as the only allowed client is lr2oraja.\nIf confused, google 'lr2oraja' for install instructions.",
-					Importance.WARNING);
-		} else if (BEATORAJA_CLIENT_VERSION.toLowerCase().startsWith("lr2oraja")) {
-			log("You are playing on LR2oraja. PMS (9KEY) scores WILL NOT SUBMIT to " + NAME
-					+ ", as the only allowed client is beatoraja.",
-					Importance.WARNING);
+		Boolean isWindows = System.getProperty("os.name").startsWith("Windows");
+		String fixInfo = isWindows ? "You can skip this warning by adding 'set SHUT_UP_TACHI=yes' to your .bat file."
+				: "You can skip this warning by adding 'export SHUT_UP_TACHI=yes' to your .command file.";
+
+		if (System.getenv("SHUT_UP_TACHI") != null) {
+			if (BEATORAJA_CLIENT_VERSION.toLowerCase().startsWith("beatoraja")) {
+				String msg = "You are playing on beatoraja.\n"
+						+ "PMS (9KEY) scores will submit to the " + NAME + ".\n"
+						+ "BMS (7KEY and 14KEY) scores WILL NOT SUBMIT to the " + NAME
+						+ ", as the only allowed client is lr2oraja.\nIf confused, google 'lr2oraja' for install instructions.\n"
+						+ fixInfo;
+
+				log(msg, Importance.WARNING);
+				JOptionPane.showMessageDialog(null, msg, "IR Client Warning", JOptionPane.WARNING_MESSAGE);
+			} else if (BEATORAJA_CLIENT_VERSION.toLowerCase().startsWith("lr2oraja")) {
+				String msg = "You are playing on LR2oraja.\n"
+						+ "BMS (7KEY, 14KEY) scores will submit to the " + NAME + ".\n"
+						+ "PMS (9KEY) scores WILL NOT SUBMIT to the " + NAME
+						+ ", as the only allowed client is beatoraja.\n"
+						+ fixInfo;
+
+				log(msg, Importance.WARNING);
+				JOptionPane.showMessageDialog(null, msg, "IR Client Warning", JOptionPane.WARNING_MESSAGE);
+			}
 		}
 
 		ResponseCreator<IRPlayerData> rc = new ResponseCreator<IRPlayerData>();
