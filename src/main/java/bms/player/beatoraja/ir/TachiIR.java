@@ -1,13 +1,17 @@
 package bms.player.beatoraja.ir;
 
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import javax.swing.JOptionPane;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 import bms.player.beatoraja.MainController;
+import bms.player.beatoraja.MessageRenderer;
 import bms.player.beatoraja.ScoreData;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -19,6 +23,13 @@ import okhttp3.Response;
 // I have modified it for my own ends, but the same base is here.
 
 public class TachiIR implements IRConnection {
+	enum Importance {
+		DEBUG,
+		INFO,
+		WARNING,
+		ERROR
+	}
+
 	// Do NOT move these variables.
 	// I mean this literally. Do not move them, do not touch them for any reason.
 	// It is part of the worlds worst templating system that I hacked
@@ -55,11 +66,23 @@ public class TachiIR implements IRConnection {
 		boolean success;
 		String description;
 		JsonNode body;
+		int statusCode;
 
-		TachiResponse(JsonNode actualObj) {
+		TachiResponse(JsonNode actualObj, int code) {
 			success = actualObj.get("success").asBoolean();
 			description = actualObj.get("description").asText();
 			body = actualObj.get("body");
+			statusCode = code;
+		}
+	}
+
+	class FailedTachiResponse {
+		boolean success;
+		String description;
+
+		FailedTachiResponse(JsonNode actualObj) {
+			success = actualObj.get("success").asBoolean();
+			description = actualObj.get("description").asText();
 		}
 	}
 
@@ -75,15 +98,10 @@ public class TachiIR implements IRConnection {
 
 		try (Response response = client.newCall(request).execute()) {
 			int code = response.code();
-
-			if (code != 200) {
-				log("Received " + code + " from " + url + ".");
-			}
-
 			ObjectMapper mapper = new ObjectMapper();
 			JsonNode actualObj = mapper.readTree(response.body().string());
 
-			return new TachiResponse(actualObj);
+			return new TachiResponse(actualObj, code);
 		}
 	}
 
@@ -102,23 +120,39 @@ public class TachiIR implements IRConnection {
 
 		try (Response response = client.newCall(request).execute()) {
 			int code = response.code();
-
-			if (code != 200) {
-				log("Received " + code + " from " + url + ".");
-			}
-
 			ObjectMapper mapper = new ObjectMapper();
 			JsonNode actualObj = mapper.readTree(response.body().string());
 
-			return new TachiResponse(actualObj);
+			return new TachiResponse(actualObj, code);
 		}
 	}
 
 	/**
 	 * Utility wrapper for logging to stdout.
 	 */
-	private void log(String message) {
-		System.out.println("[" + NAME + " IR] (" + VERSION + ") " + message);
+	private void log(String message, Importance imp) {
+		String msg = "[" + NAME + "] (" + VERSION + ") " + message;
+		System.out.println(msg);
+
+		// COMMENTED OUT: This does not work -- it's impossible to obtain a reference to
+		// the in game
+		// message renderer.
+		// // if worse than debug
+		// if (imp.compareTo(Importance.DEBUG) > 0) {
+		// Color colour;
+
+		// if (imp == Importance.ERROR) {
+		// colour = Color.RED;
+		// } else if (imp == Importance.WARNING) {
+		// colour = Color.GOLD;
+		// } else if (imp == Importance.DEBUG) {
+		// colour = Color.BLUE;
+		// } else {
+		// colour = Color.GRAY;
+		// }
+
+		// msgRenderer.addMessage(msg, colour, 0);
+		// }
 	}
 
 	/**
@@ -140,10 +174,6 @@ public class TachiIR implements IRConnection {
 				"This build of TachiIR is critically broken. Report this, or check the logs above to see if it was your fault.");
 	}
 
-	private void panic(String message) {
-		throw new RuntimeException(message);
-	}
-
 	public IRResponse<IRPlayerData> register(String id, String pass, String name) {
 		return null;
 	}
@@ -155,14 +185,35 @@ public class TachiIR implements IRConnection {
 	 * place their relevant API key inside `password`.
 	 */
 	public IRResponse<IRPlayerData> login(String id, String pass) {
-		if (BASE_URL == "") {
-			log("No BASE_URL. This build of TachiIR is likely to be broken. Report this.");
+		if (BASE_URL.equals("")) {
+			log("No BASE_URL. This build of TachiIR is likely to be broken. Report this.", Importance.ERROR);
 			panic();
 		}
 
-		if (!BEATORAJA_CLIENT_VERSION.toLowerCase().startsWith("lr2oraja")) {
-			log("Invalid client. " + NAME + " IR only supports lr2oraja. Received " + BEATORAJA_CLIENT_VERSION);
-			panic("Invalid client. " + NAME + " IR only supports lr2oraja. Received " + BEATORAJA_CLIENT_VERSION);
+		Boolean isWindows = System.getProperty("os.name").startsWith("Windows");
+		String fixInfo = isWindows ? "You can skip this warning by adding 'set SHUT_UP_TACHI=yes' to your .bat file."
+				: "You can skip this warning by adding 'export SHUT_UP_TACHI=yes' to your .command file.";
+
+		if (System.getenv("SHUT_UP_TACHI") == null) {
+			if (BEATORAJA_CLIENT_VERSION.toLowerCase().startsWith("beatoraja")) {
+				String msg = "You are playing on beatoraja.\n"
+						+ "PMS (9KEY) scores will submit to the " + NAME + ".\n"
+						+ "BMS (7KEY and 14KEY) scores WILL NOT SUBMIT to the " + NAME
+						+ ", as the only allowed client is lr2oraja.\nIf confused, google 'lr2oraja' for install instructions.\n"
+						+ fixInfo;
+
+				log(msg, Importance.WARNING);
+				JOptionPane.showMessageDialog(null, msg, "IR Client Warning", JOptionPane.WARNING_MESSAGE);
+			} else if (BEATORAJA_CLIENT_VERSION.toLowerCase().startsWith("lr2oraja")) {
+				String msg = "You are playing on LR2oraja.\n"
+						+ "BMS (7KEY, 14KEY) scores will submit to the " + NAME + ".\n"
+						+ "PMS (9KEY) scores WILL NOT SUBMIT to the " + NAME
+						+ ", as the only allowed client is beatoraja.\n"
+						+ fixInfo;
+
+				log(msg, Importance.WARNING);
+				JOptionPane.showMessageDialog(null, msg, "IR Client Warning", JOptionPane.WARNING_MESSAGE);
+			}
 		}
 
 		ResponseCreator<IRPlayerData> rc = new ResponseCreator<IRPlayerData>();
@@ -176,18 +227,19 @@ public class TachiIR implements IRConnection {
 			TachiResponse resp = GETRequest("/api/v1/status?echo=lr2oraja-ir");
 
 			if (resp.success) {
-				log("Connected to " + BASE_URL + ".");
+				log("Connected to " + BASE_URL + ".", Importance.DEBUG);
 
 				TachiResponse userResp = GETRequest("/api/v1/users/" + resp.body.get("whoami").asText());
 
 				if (userResp.success) {
-					log("Authenticated as " + userResp.body.get("username").asText() + ".");
+					log("Authenticated as " + userResp.body.get("username").asText() + ".", Importance.INFO);
 				} else {
-					log("Failed to find out who you are. That's not good!");
+					log("Failed to find out who you are. Can't login!", Importance.ERROR);
 					_throw();
 				}
 			} else {
-				log("An error has occured in logging in. Please make sure that you are putting an API Key in your password field, and not your site login password.");
+				log("An error has occured in logging in. Please make sure that you are putting an API Key in your password field, and not your site login password.",
+						Importance.ERROR);
 				_throw();
 			}
 
@@ -227,6 +279,14 @@ public class TachiIR implements IRConnection {
 
 			TachiResponse resp = POSTRequest("/ir/beatoraja/submit-score", json);
 
+			if (resp.statusCode == 202) {
+				log(resp.description, Importance.INFO);
+			} else if (resp.statusCode >= 500) {
+				log(resp.description, Importance.ERROR);
+			} else if (resp.statusCode >= 400) {
+				log(resp.description, Importance.WARNING);
+			}
+
 			return rc.create(resp.success, resp.description, null);
 		} catch (Exception e) {
 			System.out.println(e.toString());
@@ -257,6 +317,12 @@ public class TachiIR implements IRConnection {
 			String json = ow.writeValueAsString(courseData);
 
 			TachiResponse resp = POSTRequest("/ir/beatoraja/submit-course", json);
+
+			if (resp.statusCode >= 500) {
+				log(resp.description, Importance.ERROR);
+			} else if (resp.statusCode >= 400) {
+				log(resp.description, Importance.WARNING);
+			}
 
 			return rc.create(resp.success, resp.description, null);
 		} catch (Exception e) {
@@ -327,7 +393,8 @@ public class TachiIR implements IRConnection {
 
 			return rc.create(resp.success, resp.description, irScoreArr);
 		} catch (Exception e) {
-			log("An error has occured while fetching scores for " + model.title + " (" + model.sha256 + ")");
+			log("An error has occured while fetching scores for " + model.title + " (" + model.sha256 + ")",
+					Importance.ERROR);
 			e.printStackTrace(System.out);
 			return rc.create(false, "Internal Exception", null);
 		}
