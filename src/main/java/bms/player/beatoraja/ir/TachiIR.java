@@ -3,6 +3,7 @@ package bms.player.beatoraja.ir;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -188,6 +189,9 @@ public class TachiIR implements IRConnection {
 			panic();
 		}
 
+		final JDialog dialogThatForcesAlwaysOnTop = new JDialog();
+		dialogThatForcesAlwaysOnTop.setAlwaysOnTop(true);
+
 		Boolean isWindows = System.getProperty("os.name").startsWith("Windows");
 		String fixInfo = isWindows ? "You can skip this warning by adding 'set SHUT_UP_TACHI=yes' to your .bat file."
 				: "You can skip this warning by adding 'export SHUT_UP_TACHI=yes' to your .command file.";
@@ -201,7 +205,8 @@ public class TachiIR implements IRConnection {
 						+ fixInfo;
 
 				log(msg, Importance.WARNING);
-				JOptionPane.showMessageDialog(null, msg, "IR Client Warning", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(dialogThatForcesAlwaysOnTop, msg, "IR Client Warning",
+						JOptionPane.WARNING_MESSAGE);
 			} else if (BEATORAJA_CLIENT_VERSION.toLowerCase().startsWith("lr2oraja")) {
 				String msg = "You are playing on LR2oraja.\n"
 						+ "BMS (7KEY, 14KEY) scores will submit to the " + NAME + ".\n"
@@ -210,7 +215,8 @@ public class TachiIR implements IRConnection {
 						+ fixInfo;
 
 				log(msg, Importance.WARNING);
-				JOptionPane.showMessageDialog(null, msg, "IR Client Warning", JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(dialogThatForcesAlwaysOnTop, msg, "IR Client Warning",
+						JOptionPane.WARNING_MESSAGE);
 			}
 		}
 
