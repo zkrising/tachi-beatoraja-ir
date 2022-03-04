@@ -189,14 +189,14 @@ public class TachiIR implements IRConnection {
 			panic();
 		}
 
-		final JDialog dialogThatForcesAlwaysOnTop = new JDialog();
-		dialogThatForcesAlwaysOnTop.setAlwaysOnTop(true);
-
 		Boolean isWindows = System.getProperty("os.name").startsWith("Windows");
 		String fixInfo = isWindows ? "You can skip this warning by adding 'set SHUT_UP_TACHI=yes' to your .bat file."
 				: "You can skip this warning by adding 'export SHUT_UP_TACHI=yes' to your .command file.";
 
 		if (System.getenv("SHUT_UP_TACHI") == null) {
+			final JDialog dialogThatForcesAlwaysOnTop = new JDialog();
+			dialogThatForcesAlwaysOnTop.setAlwaysOnTop(true);
+
 			if (BEATORAJA_CLIENT_VERSION.toLowerCase().startsWith("beatoraja")) {
 				String msg = "You are playing on beatoraja.\n"
 						+ "PMS (9KEY) scores will submit to the " + NAME + ".\n"
