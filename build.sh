@@ -2,7 +2,7 @@
 set -e -o pipefail
 
 # Make sure you update the pom.xml, too!
-TCHIR_VERSION="v2.1.2"
+TCHIR_VERSION="v2.2.0"
 
 if [ -z "$TCHIR_NAME" ] || [ -z "$TCHIR_HOME" ] || [ -z "$TCHIR_VERSION" ] || [ -z "$TCHIR_BASE_URL" ]; then
 	echo "You're calling build.sh without any of the required environment variables."
@@ -13,8 +13,8 @@ fi
 echo "BUILDING: $TCHIR_NAME $TCHIR_HOME $TCHIR_VERSION $TCHIR_BASE_URL"
 
 # Compile time variables in java are near impossible
-# And i cannot stand dependency injection.
-# Am i going to hell for reinventing the C preprocessor poorly?
+# And I cannot stand dependency injection.
+# Am I going to hell for reinventing the C preprocessor poorly?
 # Probably.
 
 JAVA_LOC='./src/main/java/bms/player/beatoraja/ir/TachiIR.java'

@@ -177,6 +177,8 @@ public class TachiIR implements IRConnection {
 		return null;
 	}
 
+	private String username;
+
 	/**
 	 * Basically does nothing. Performs some init and status checks for the IR.
 	 * 
@@ -233,7 +235,9 @@ public class TachiIR implements IRConnection {
 			if (resp.success) {
 				log("Connected to " + BASE_URL + ".", Importance.DEBUG);
 
-				TachiResponse userResp = GETRequest("/api/v1/users/" + resp.body.get("whoami").asText());
+				username = resp.body.get("whoami").asText();
+
+				TachiResponse userResp = GETRequest("/api/v1/users/" + username);
 
 				if (userResp.success) {
 					log("Authenticated as " + userResp.body.get("username").asText() + ".", Importance.INFO);
@@ -405,9 +409,62 @@ public class TachiIR implements IRConnection {
 	}
 
 	public IRResponse<IRPlayerData[]> getRivals() {
-		// @todo Implement getRivals.
 		ResponseCreator<IRPlayerData[]> rc = new ResponseCreator<IRPlayerData[]>();
-		return rc.create(false, "Unimplemented.", new IRPlayerData[0]);
+
+		String gameType = System.getenv("RIVALS_TO_GET");
+
+		if (gameType == null) {
+			gameType = "bms/7K";
+		}
+
+		if (gameType.compareTo("bms/7K") != 0 &&
+				gameType.compareTo("bms/14K") != 0 &&
+				gameType.compareTo("pms/Controller") != 0 &&
+				gameType.compareTo("pms/Keyboard") != 0) {
+			String msg = "Invalid RIVALS_TO_GET in your launcher file.\n" +
+					"We expected either bms/7K, bms/14K, pms/Controller or pms/Keyboard.\n" +
+					"However, we got" + gameType + ". Is the capitalisation correct?\n" +
+					"If this value is not set, it defaults to bms/7K.";
+
+			log(msg, Importance.WARNING);
+
+			final JDialog dialogThatForcesAlwaysOnTop = new JDialog();
+			dialogThatForcesAlwaysOnTop.setAlwaysOnTop(true);
+
+			JOptionPane.showMessageDialog(dialogThatForcesAlwaysOnTop, msg, "Rivals Warning",
+					JOptionPane.WARNING_MESSAGE);
+
+			return rc.create(false, "Invalid RIVALS_TO_GET.", null);
+		}
+
+		try {
+			TachiResponse resp = GETRequest("/api/v1/users/" + username + "/games/" + gameType + "/rivals");
+
+			if (!resp.success) {
+				return rc.create(false, "Failed to fetch rivals.", null);
+			}
+
+			ArrayList<IRPlayerData> irRivals = new ArrayList<IRPlayerData>();
+
+			for (final JsonNode objNode : resp.body) {
+				IRPlayerData rival = new IRPlayerData(objNode.get("username").asText(),
+						objNode.get("username").asText(), "?");
+
+				log("Found rival: " + objNode.get("username"), Importance.INFO);
+
+				irRivals.add(rival);
+			}
+
+			// weird java oddities: [0] instantiates a list faster than prealloc
+			IRPlayerData[] irRivalsArr = irRivals.toArray(new IRPlayerData[0]);
+
+			return rc.create(resp.success, resp.description, irRivalsArr);
+		} catch (Exception e) {
+			log("An error has occured while fetching scores for " + username + " for" + gameType + ".",
+					Importance.ERROR);
+			e.printStackTrace(System.out);
+			return rc.create(false, "Internal Exception", null);
+		}
 	}
 
 	public IRResponse<IRTableData[]> getTableDatas() {
