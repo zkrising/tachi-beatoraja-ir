@@ -2,7 +2,7 @@
 set -e -o pipefail
 
 # Make sure you update the pom.xml, too!
-TCHIR_VERSION="v2.2.0"
+TCHIR_VERSION="v2.2.1"
 
 if [ -z "$TCHIR_NAME" ] || [ -z "$TCHIR_HOME" ] || [ -z "$TCHIR_VERSION" ] || [ -z "$TCHIR_BASE_URL" ]; then
 	echo "You're calling build.sh without any of the required environment variables."
