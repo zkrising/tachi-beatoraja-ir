@@ -448,7 +448,7 @@ public class TachiIR implements IRConnection {
 
 			for (final JsonNode objNode : resp.body) {
 				IRPlayerData rival = new IRPlayerData(objNode.get("username").asText(),
-						objNode.get("username").asText(), "?");
+						objNode.get("username").asText(), objNode.get("username").asText());
 
 				log("Found rival: " + objNode.get("username"), Importance.INFO);
 
