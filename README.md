@@ -1,5 +1,5 @@
 # Tachi Beatoraja IR
-This is the Tachi Internet Ranking implementation for the LR2oraja variant of beatoraja.
+This is the [Tachi](https://github.com/TNG-dev/Tachi) Internet Ranking implementation for the LR2oraja variant of beatoraja.
 
 ## Downloads
 
