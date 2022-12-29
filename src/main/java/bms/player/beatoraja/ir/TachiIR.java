@@ -409,64 +409,11 @@ public class TachiIR implements IRConnection {
 	}
 
 	public IRResponse<IRPlayerData[]> getRivals() {
+		// Apparently too much strain on the backend for this to work as intended
 		ResponseCreator<IRPlayerData[]> rc = new ResponseCreator<IRPlayerData[]>();
-
-		String gameType = System.getenv("RIVALS_TO_GET");
-
-		if (gameType == null) {
-			gameType = "bms/7K";
-		}
-
-		if (gameType.compareTo("bms/7K") != 0 &&
-				gameType.compareTo("bms/14K") != 0 &&
-				gameType.compareTo("pms/Controller") != 0 &&
-				gameType.compareTo("pms/Keyboard") != 0) {
-			String msg = "Invalid RIVALS_TO_GET in your launcher file.\n" +
-					"We expected either bms/7K, bms/14K, pms/Controller or pms/Keyboard.\n" +
-					"However, we got" + gameType + ". Is the capitalisation correct?\n" +
-					"If this value is not set, it defaults to bms/7K.";
-
-			log(msg, Importance.WARNING);
-
-			final JDialog dialogThatForcesAlwaysOnTop = new JDialog();
-			dialogThatForcesAlwaysOnTop.setAlwaysOnTop(true);
-
-			JOptionPane.showMessageDialog(dialogThatForcesAlwaysOnTop, msg, "Rivals Warning",
-					JOptionPane.WARNING_MESSAGE);
-
-			return rc.create(false, "Invalid RIVALS_TO_GET.", null);
-		}
-
-		try {
-			TachiResponse resp = GETRequest("/api/v1/users/" + username + "/games/" + gameType + "/rivals");
-
-			if (!resp.success) {
-				return rc.create(false, "Failed to fetch rivals.", null);
-			}
-
-			ArrayList<IRPlayerData> irRivals = new ArrayList<IRPlayerData>();
-
-			for (final JsonNode objNode : resp.body) {
-				IRPlayerData rival = new IRPlayerData(objNode.get("username").asText(),
-						objNode.get("username").asText(), "?");
-
-				log("Found rival: " + objNode.get("username"), Importance.INFO);
-
-				irRivals.add(rival);
-			}
-
-			// weird java oddities: [0] instantiates a list faster than prealloc
-			IRPlayerData[] irRivalsArr = irRivals.toArray(new IRPlayerData[0]);
-
-			return rc.create(resp.success, resp.description, irRivalsArr);
-		} catch (Exception e) {
-			log("An error has occured while fetching scores for " + username + " for" + gameType + ".",
-					Importance.ERROR);
-			e.printStackTrace(System.out);
-			return rc.create(false, "Internal Exception", null);
-		}
+		return rc.create(false, "Unimplemented.", new IRPlayerData[0]);
 	}
-
+	
 	public IRResponse<IRTableData[]> getTableDatas() {
 		// Not entirely sure what this method is for. No todo here.*
 		ResponseCreator<IRTableData[]> rc = new ResponseCreator<IRTableData[]>();
