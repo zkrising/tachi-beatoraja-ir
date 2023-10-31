@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 import bms.player.beatoraja.MainController;
 import bms.player.beatoraja.ScoreData;
+import bms.player.beatoraja.ir.IRAccount;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -173,7 +174,7 @@ public class TachiIR implements IRConnection {
 				"This build of TachiIR is critically broken. Report this, or check the logs above to see if it was your fault.");
 	}
 
-	public IRResponse<IRPlayerData> register(String id, String pass, String name) {
+	public IRResponse<IRPlayerData> register(IRAccount account) {
 		return null;
 	}
 
@@ -185,7 +186,7 @@ public class TachiIR implements IRConnection {
 	 * Authentication is already handled with API keys, and users are expected to
 	 * place their relevant API key inside `password`.
 	 */
-	public IRResponse<IRPlayerData> login(String id, String pass) {
+	public IRResponse<IRPlayerData> login(IRAccount account) {
 		if (BASE_URL.equals("")) {
 			log("No BASE_URL. This build of TachiIR is likely to be broken. Report this.", Importance.ERROR);
 			panic();
@@ -227,7 +228,7 @@ public class TachiIR implements IRConnection {
 		// We grab the apiToken from the users password. Their username doesn't actually
 		// matter.
 		// This is for separation of authentication concerns.
-		apiToken = pass;
+		apiToken = account.password;
 
 		try {
 			TachiResponse resp = GETRequest("/api/v1/status?echo=lr2oraja-ir");
