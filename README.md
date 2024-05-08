@@ -7,7 +7,7 @@ Check the sidebar. When a new version of this is created, `.jar` files will be c
 
 ## Setup
 
-Follow the instructions on [Bokutachi](https://bokutachi.xyz/dashboard/import/beatoraja-ir).
+Follow the instructions on [Bokutachi](https://bokutachi.xyz/dashboard/import/lr2oraja-ir).
 
 ## Compiling
 
