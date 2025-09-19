@@ -7,10 +7,10 @@
 
 	<groupId>xyz.zkldi.bokutachiIR</groupId>
 	<artifactId>bokutachiIR</artifactId>
-	<version>3.1.0</version>
+	<version>3.1.1</version>
 
 	<name>Tachi IR</name>
-	<url>https://github.com/TNG-dev</url>
+	<url>https://github.com/zkrising</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
