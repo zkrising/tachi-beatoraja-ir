@@ -196,7 +196,10 @@ public class TachiIR implements IRConnection {
 		String fixInfo = isWindows ? "You can skip this warning by adding 'set SHUT_UP_TACHI=yes' to your .bat file."
 				: "You can skip this warning by adding 'export SHUT_UP_TACHI=yes' to your .command file.";
 
-		if (System.getenv("SHUT_UP_TACHI") == null) {
+		String jdkVendor = System.getProperty("java.vendor").toLowerCase();
+
+		if (System.getenv("SHUT_UP_TACHI") == null &&
+				!jdkVendor.contains("liberica")) {
 			final JDialog dialogThatForcesAlwaysOnTop = new JDialog();
 			dialogThatForcesAlwaysOnTop.setAlwaysOnTop(true);
 
@@ -239,6 +242,7 @@ public class TachiIR implements IRConnection {
 				username = resp.body.get("whoami").asText();
 
 				TachiResponse userResp = GETRequest("/api/v1/users/" + username);
+				log("Sending request to /api/v1/users/" + username, Importance.INFO);
 
 				if (userResp.success) {
 					log("Authenticated as " + userResp.body.get("username").asText() + ".", Importance.INFO);
@@ -414,7 +418,7 @@ public class TachiIR implements IRConnection {
 		ResponseCreator<IRPlayerData[]> rc = new ResponseCreator<IRPlayerData[]>();
 		return rc.create(false, "Unimplemented.", new IRPlayerData[0]);
 	}
-	
+
 	public IRResponse<IRTableData[]> getTableDatas() {
 		// Not entirely sure what this method is for. No todo here.*
 		ResponseCreator<IRTableData[]> rc = new ResponseCreator<IRTableData[]>();
